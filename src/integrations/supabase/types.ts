@@ -71,6 +71,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_preferences: {
+        Row: {
+          created_at: string
+          daily_reminder_enabled: boolean
+          daily_reminder_time: string | null
+          id: string
+          last_expense_date: string | null
+          preferred_currency: string
+          theme: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_reminder_enabled?: boolean
+          daily_reminder_time?: string | null
+          id?: string
+          last_expense_date?: string | null
+          preferred_currency?: string
+          theme?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_reminder_enabled?: boolean
+          daily_reminder_time?: string | null
+          id?: string
+          last_expense_date?: string | null
+          preferred_currency?: string
+          theme?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

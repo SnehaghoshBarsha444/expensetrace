@@ -20,6 +20,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ExpenseCategory, EXPENSE_CATEGORIES } from '@/types/expense';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { getCurrencyInfo } from '@/types/currency';
 
 interface ExpenseFormProps {
   onSubmit: (expense: {
@@ -36,6 +38,9 @@ export const ExpenseForm = ({ onSubmit }: ExpenseFormProps) => {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const { currency } = useCurrency();
+
+  const currencyInfo = getCurrencyInfo(currency);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,7 +123,7 @@ export const ExpenseForm = ({ onSubmit }: ExpenseFormProps) => {
       {/* Amount Input */}
       <div className="space-y-2">
         <Label htmlFor="amount" className="text-sm font-medium text-foreground">
-          Amount ($)
+          Amount ({currencyInfo.symbol})
         </Label>
         <Input
           id="amount"

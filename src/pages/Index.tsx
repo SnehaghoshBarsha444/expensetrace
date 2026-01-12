@@ -1,4 +1,4 @@
-import { DollarSign, Receipt, LogOut } from 'lucide-react';
+import { Receipt, LogOut } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,10 +9,16 @@ import { ExpenseCharts } from '@/components/ExpenseCharts';
 import { BudgetManager } from '@/components/BudgetManager';
 import { ExportButton } from '@/components/ExportButton';
 import { AuthForm } from '@/components/AuthForm';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { CurrencySelector } from '@/components/CurrencySelector';
+import { NotificationManager } from '@/components/NotificationManager';
 import { useAuth } from '@/hooks/useAuth';
 import { useExpensesDb } from '@/hooks/useExpensesDb';
 import { useBudgets } from '@/hooks/useBudgets';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { toast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
 
 const Index = () => {
   const { user, isLoading: authLoading, signOut, isAuthenticated } = useAuth();
@@ -31,13 +37,19 @@ const Index = () => {
     deleteBudget,
   } = useBudgets();
 
+  const { preferences, updatePreferences } = useUserPreferences();
+  const { formatAmount } = useCurrency();
+
   const handleAddExpense = async (expense: Parameters<typeof addExpense>[0]) => {
     const result = await addExpense(expense);
     if (result) {
       toast({
         title: 'Expense added!',
-        description: `$${expense.amount.toFixed(2)} added to ${expense.category}`,
+        description: `${formatAmount(expense.amount)} added to ${expense.category}`,
       });
+
+      // Update last expense date for daily reminder tracking
+      await updatePreferences({ lastExpenseDate: format(new Date(), 'yyyy-MM-dd') });
 
       // Check budget alerts
       const budget = budgets.find(b => b.category === expense.category);
@@ -117,7 +129,14 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">{user?.email}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <CurrencySelector />
+              <NotificationManager 
+                budgets={budgets}
+                expensesByCategory={getExpensesByCategory()}
+                lastExpenseDate={preferences?.lastExpenseDate}
+              />
+              <ThemeToggle />
               <ExportButton expenses={expenses} />
               <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2">
                 <LogOut className="h-4 w-4" />
@@ -155,7 +174,7 @@ const Index = () => {
                 <Card className="glass-card sticky top-24">
                   <CardHeader className="pb-4">
                     <CardTitle className="flex items-center gap-2 text-lg">
-                      <DollarSign className="h-5 w-5 text-primary" />
+                      <Receipt className="h-5 w-5 text-primary" />
                       Add Expense
                     </CardTitle>
                   </CardHeader>
