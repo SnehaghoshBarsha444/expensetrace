@@ -1,6 +1,7 @@
 import { TrendingUp, Wallet, PieChart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ExpenseCategory, EXPENSE_CATEGORIES, getCategoryInfo } from '@/types/expense';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface ExpenseSummaryProps {
   totalExpenses: number;
@@ -13,12 +14,7 @@ export const ExpenseSummary = ({
   expensesByCategory, 
   expenseCount 
 }: ExpenseSummaryProps) => {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
+  const { formatAmount } = useCurrency();
 
   // Get top categories sorted by amount
   const sortedCategories = Object.entries(expensesByCategory)
@@ -34,7 +30,7 @@ export const ExpenseSummary = ({
             <div className="space-y-2">
               <p className="text-sm font-medium text-muted-foreground">Total Expenses</p>
               <p className="text-3xl font-bold tracking-tight gradient-text">
-                {formatCurrency(totalExpenses)}
+                {formatAmount(totalExpenses)}
               </p>
               <p className="text-sm text-muted-foreground">
                 {expenseCount} transaction{expenseCount !== 1 ? 's' : ''}
@@ -54,7 +50,7 @@ export const ExpenseSummary = ({
             <div className="space-y-2">
               <p className="text-sm font-medium text-muted-foreground">Average Expense</p>
               <p className="text-3xl font-bold tracking-tight text-foreground">
-                {formatCurrency(expenseCount > 0 ? totalExpenses / expenseCount : 0)}
+                {formatAmount(expenseCount > 0 ? totalExpenses / expenseCount : 0)}
               </p>
               <p className="text-sm text-muted-foreground">per transaction</p>
             </div>
@@ -89,7 +85,7 @@ export const ExpenseSummary = ({
                         <span className="font-medium text-foreground">{categoryInfo.label}</span>
                       </span>
                       <span className="text-muted-foreground tabular-nums">
-                        {formatCurrency(amount)}
+                        {formatAmount(amount)}
                       </span>
                     </div>
                     <div className="h-1.5 bg-muted rounded-full overflow-hidden">

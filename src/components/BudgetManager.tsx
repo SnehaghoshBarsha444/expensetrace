@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/select';
 import { ExpenseCategory, EXPENSE_CATEGORIES, getCategoryInfo } from '@/types/expense';
 import { Budget } from '@/hooks/useBudgets';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { toast } from '@/hooks/use-toast';
 
 interface BudgetManagerProps {
@@ -42,6 +43,7 @@ export const BudgetManager = ({
   const [selectedCategory, setSelectedCategory] = useState<ExpenseCategory>('food');
   const [budgetAmount, setBudgetAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { formatAmount, currency } = useCurrency();
 
   const handleSaveBudget = async () => {
     if (!budgetAmount || parseFloat(budgetAmount) <= 0) {
@@ -60,7 +62,7 @@ export const BudgetManager = ({
     if (result) {
       toast({
         title: 'Budget saved!',
-        description: `Budget for ${getCategoryInfo(selectedCategory).label} set to $${budgetAmount}`,
+        description: `Budget for ${getCategoryInfo(selectedCategory).label} set to ${formatAmount(parseFloat(budgetAmount))}`,
       });
       setIsDialogOpen(false);
       setBudgetAmount('');
@@ -83,13 +85,6 @@ export const BudgetManager = ({
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
-
   const getProgressColor = (spent: number, limit: number) => {
     const percentage = (spent / limit) * 100;
     if (percentage >= 100) return 'bg-destructive';
@@ -107,14 +102,6 @@ export const BudgetManager = ({
     }
     return <CheckCircle className="h-4 w-4 text-primary" />;
   };
-
-  const categoriesWithBudgets = EXPENSE_CATEGORIES.filter(cat =>
-    budgets.some(b => b.category === cat.value)
-  );
-
-  const categoriesWithoutBudgets = EXPENSE_CATEGORIES.filter(cat =>
-    !budgets.some(b => b.category === cat.value)
-  );
 
   return (
     <Card className="glass-card">
@@ -161,7 +148,7 @@ export const BudgetManager = ({
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Monthly Limit ($)</Label>
+                  <Label>Monthly Limit ({currency})</Label>
                   <Input
                     type="number"
                     min="0"
@@ -211,7 +198,7 @@ export const BudgetManager = ({
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-muted-foreground">
-                        {formatCurrency(spent)} / {formatCurrency(budget.limitAmount)}
+                        {formatAmount(spent)} / {formatAmount(budget.limitAmount)}
                       </span>
                       <Button
                         variant="ghost"
@@ -236,13 +223,13 @@ export const BudgetManager = ({
                   {remaining < 0 && (
                     <p className="text-sm text-destructive flex items-center gap-1">
                       <AlertTriangle className="h-3 w-3" />
-                      Over budget by {formatCurrency(Math.abs(remaining))}
+                      Over budget by {formatAmount(Math.abs(remaining))}
                     </p>
                   )}
                   {remaining > 0 && remaining < budget.limitAmount * 0.2 && (
                     <p className="text-sm text-orange-500 flex items-center gap-1">
                       <AlertTriangle className="h-3 w-3" />
-                      Only {formatCurrency(remaining)} remaining
+                      Only {formatAmount(remaining)} remaining
                     </p>
                   )}
                 </div>

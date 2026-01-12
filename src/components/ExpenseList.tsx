@@ -21,6 +21,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Expense, ExpenseCategory, EXPENSE_CATEGORIES, getCategoryInfo } from '@/types/expense';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { format, parseISO } from 'date-fns';
 
 interface ExpenseListProps {
@@ -30,17 +31,11 @@ interface ExpenseListProps {
 
 export const ExpenseList = ({ expenses, onDelete }: ExpenseListProps) => {
   const [filterCategory, setFilterCategory] = useState<ExpenseCategory | 'all'>('all');
+  const { formatAmount } = useCurrency();
 
   const filteredExpenses = filterCategory === 'all' 
     ? expenses 
     : expenses.filter(e => e.category === filterCategory);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
 
   if (expenses.length === 0) {
     return (
@@ -131,7 +126,7 @@ export const ExpenseList = ({ expenses, onDelete }: ExpenseListProps) => {
               <div className="flex items-center gap-4">
                 {/* Amount */}
                 <span className="text-lg font-bold text-foreground tabular-nums">
-                  {formatCurrency(expense.amount)}
+                  {formatAmount(expense.amount)}
                 </span>
 
                 {/* Delete Button */}
