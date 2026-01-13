@@ -1,5 +1,6 @@
 import { ArrowRight, BarChart3, Shield, Wallet, Globe, TrendingUp } from 'lucide-react';
 import logo from '@/assets/logo.png';
+import heroIllustration from '@/assets/hero-illustration.png';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -50,39 +51,63 @@ export const LandingPage = ({ onGetStarted }: LandingPageProps) => {
           </nav>
         </div>
 
-        <div className="container max-w-6xl mx-auto px-4 py-20 md:py-32 relative">
-          <div className="max-w-3xl mx-auto text-center space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-accent-foreground text-sm font-medium">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-              </span>
-              Smart expense tracking made simple
+        <div className="container max-w-6xl mx-auto px-4 py-16 md:py-24 relative">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Text content */}
+            <div className="space-y-8 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-accent-foreground text-sm font-medium animate-fade-in">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+                Smart expense tracking made simple
+              </div>
+
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight animate-slide-up">
+                Take Control of Your{' '}
+                <span className="gradient-text">Finances</span>
+              </h1>
+
+              <p className="text-lg md:text-xl text-muted-foreground max-w-xl animate-slide-up" style={{ animationDelay: '100ms' }}>
+                Track expenses, manage budgets, and gain insights into your spending habits. 
+                All in one beautiful, secure application.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4 animate-slide-up" style={{ animationDelay: '200ms' }}>
+                <Button onClick={onGetStarted} size="lg" className="gap-2 text-base hover-lift">
+                  Get Started Free
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="lg" className="text-base hover-lift" onClick={onGetStarted}>
+                  Sign In
+                </Button>
+              </div>
+
+              <p className="text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '300ms' }}>
+                No credit card required • Free forever for personal use
+              </p>
             </div>
 
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
-              Take Control of Your{' '}
-              <span className="gradient-text">Finances</span>
-            </h1>
+            {/* Right side - Hero illustration */}
+            <div className="relative lg:block animate-scale-in" style={{ animationDelay: '200ms' }}>
+              <div className="relative">
+                {/* Glow effect behind image */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 rounded-3xl blur-3xl transform scale-95" />
+                
+                {/* Floating animation wrapper */}
+                <div className="relative animate-float">
+                  <img 
+                    src={heroIllustration} 
+                    alt="ExpenseTrace Dashboard Preview" 
+                    className="w-full h-auto rounded-2xl shadow-2xl border border-border/20"
+                  />
+                </div>
 
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Track expenses, manage budgets, and gain insights into your spending habits. 
-              All in one beautiful, secure application.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button onClick={onGetStarted} size="lg" className="gap-2 text-base">
-                Get Started Free
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="lg" className="text-base" onClick={onGetStarted}>
-                Sign In
-              </Button>
+                {/* Decorative elements */}
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl animate-pulse" />
+                <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-accent/30 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
+              </div>
             </div>
-
-            <p className="text-sm text-muted-foreground">
-              No credit card required • Free forever for personal use
-            </p>
           </div>
         </div>
       </header>
