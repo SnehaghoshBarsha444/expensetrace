@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Receipt, LogOut } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +11,7 @@ import { ExpenseCharts } from '@/components/ExpenseCharts';
 import { BudgetManager } from '@/components/BudgetManager';
 import { ExportButton } from '@/components/ExportButton';
 import { AuthForm } from '@/components/AuthForm';
+import { LandingPage } from '@/components/LandingPage';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { CurrencySelector } from '@/components/CurrencySelector';
 import { NotificationManager } from '@/components/NotificationManager';
@@ -23,6 +25,7 @@ import { toast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 
 const Index = () => {
+  const [showAuth, setShowAuth] = useState(false);
   const { user, isLoading: authLoading, signOut, isAuthenticated } = useAuth();
   const {
     expenses,
@@ -103,7 +106,10 @@ const Index = () => {
   }
 
   if (!isAuthenticated) {
-    return <AuthForm />;
+    if (showAuth) {
+      return <AuthForm />;
+    }
+    return <LandingPage onGetStarted={() => setShowAuth(true)} />;
   }
 
   const isLoading = expensesLoading;
