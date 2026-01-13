@@ -1,4 +1,5 @@
 import { Receipt, LogOut } from 'lucide-react';
+import logo from '@/assets/logo.png';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -122,11 +123,8 @@ const Index = () => {
         <div className="container max-w-6xl mx-auto px-4 py-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-primary/10">
-                <Receipt className="h-6 w-6 text-primary" />
-              </div>
+              <img src={logo} alt="ExpenseTrace" className="h-10 w-auto" />
               <div>
-                <h1 className="text-xl font-bold text-foreground">Expense Tracker</h1>
                 <p className="text-sm text-muted-foreground">{user?.email}</p>
               </div>
             </div>
