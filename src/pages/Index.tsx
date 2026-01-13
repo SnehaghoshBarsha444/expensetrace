@@ -12,6 +12,7 @@ import { AuthForm } from '@/components/AuthForm';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { CurrencySelector } from '@/components/CurrencySelector';
 import { NotificationManager } from '@/components/NotificationManager';
+import { CurrencyConverter } from '@/components/CurrencyConverter';
 import { useAuth } from '@/hooks/useAuth';
 import { useExpensesDb } from '@/hooks/useExpensesDb';
 import { useBudgets } from '@/hooks/useBudgets';
@@ -160,10 +161,11 @@ const Index = () => {
 
         {/* Tabs for different views */}
         <Tabs defaultValue="expenses" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 max-w-md">
+          <TabsList className="grid w-full grid-cols-4 max-w-lg">
             <TabsTrigger value="expenses">Expenses</TabsTrigger>
             <TabsTrigger value="charts">Analytics</TabsTrigger>
             <TabsTrigger value="budgets">Budgets</TabsTrigger>
+            <TabsTrigger value="converter">Converter</TabsTrigger>
           </TabsList>
 
           <TabsContent value="expenses" className="space-y-6">
@@ -212,6 +214,12 @@ const Index = () => {
               onSetBudget={setBudget}
               onDeleteBudget={deleteBudget}
             />
+          </TabsContent>
+
+          <TabsContent value="converter" className="animate-fade-in">
+            <div className="max-w-md mx-auto">
+              <CurrencyConverter />
+            </div>
           </TabsContent>
         </Tabs>
       </main>
