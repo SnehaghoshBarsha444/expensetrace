@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Trash2, Filter } from 'lucide-react';
+import { Trash2, Filter, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -23,13 +23,15 @@ import {
 import { Expense, ExpenseCategory, EXPENSE_CATEGORIES, getCategoryInfo } from '@/types/expense';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { format, parseISO } from 'date-fns';
+import { ExpenseEditDialog } from './ExpenseEditDialog';
 
 interface ExpenseListProps {
   expenses: Expense[];
   onDelete: (id: string) => void;
+  onEdit: (id: string, updates: Partial<Omit<Expense, 'id' | 'createdAt'>>) => Promise<boolean>;
 }
 
-export const ExpenseList = ({ expenses, onDelete }: ExpenseListProps) => {
+export const ExpenseList = ({ expenses, onDelete, onEdit }: ExpenseListProps) => {
   const [filterCategory, setFilterCategory] = useState<ExpenseCategory | 'all'>('all');
   const { formatAmount } = useCurrency();
 
@@ -123,11 +125,26 @@ export const ExpenseList = ({ expenses, onDelete }: ExpenseListProps) => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
                 {/* Amount */}
-                <span className="text-lg font-bold text-foreground tabular-nums">
+                <span className="text-lg font-bold text-foreground tabular-nums mr-2">
                   {formatAmount(expense.amount)}
                 </span>
+
+                {/* Edit Button */}
+                <ExpenseEditDialog
+                  expense={expense}
+                  onEdit={onEdit}
+                  trigger={
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-primary"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  }
+                />
 
                 {/* Delete Button */}
                 <AlertDialog>

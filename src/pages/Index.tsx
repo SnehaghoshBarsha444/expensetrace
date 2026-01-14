@@ -32,6 +32,7 @@ const Index = () => {
     isLoading: expensesLoading,
     addExpense,
     deleteExpense,
+    updateExpense,
     getTotalExpenses,
     getExpensesByCategory,
   } = useExpensesDb();
@@ -87,6 +88,23 @@ const Index = () => {
         variant: 'destructive',
       });
     }
+  };
+
+  const handleEditExpense = async (id: string, updates: Parameters<typeof updateExpense>[1]) => {
+    const success = await updateExpense(id, updates);
+    if (success) {
+      toast({
+        title: 'Expense updated',
+        description: 'Your expense has been successfully updated.',
+      });
+    } else {
+      toast({
+        title: 'Failed to update expense',
+        description: 'Please try again.',
+        variant: 'destructive',
+      });
+    }
+    return success;
   };
 
   const handleSignOut = async () => {
@@ -200,7 +218,7 @@ const Index = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} />
+                    <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} onEdit={handleEditExpense} />
                   </CardContent>
                 </Card>
               </section>
