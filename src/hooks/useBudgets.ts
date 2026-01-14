@@ -14,6 +14,7 @@ export interface Budget {
 interface DbBudget {
   id: string;
   user_id: string;
+  project_id: string | null;
   category: string;
   limit_amount: number;
   created_at: string;
@@ -28,13 +29,13 @@ const mapDbToBudget = (dbBudget: DbBudget): Budget => ({
   updatedAt: dbBudget.updated_at,
 });
 
-export const useBudgets = () => {
+export const useBudgets = (projectId: string | null) => {
   const { user } = useAuth();
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !projectId) {
       setBudgets([]);
       setIsLoading(false);
       return;
@@ -45,7 +46,8 @@ export const useBudgets = () => {
       const { data, error } = await supabase
         .from('budgets')
         .select('*')
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .eq('project_id', projectId);
 
       if (error) {
         console.error('Failed to load budgets:', error);
@@ -56,10 +58,10 @@ export const useBudgets = () => {
     };
 
     loadBudgets();
-  }, [user]);
+  }, [user, projectId]);
 
   const setBudget = useCallback(async (category: ExpenseCategory, limitAmount: number) => {
-    if (!user) return null;
+    if (!user || !projectId) return null;
 
     const existingBudget = budgets.find(b => b.category === category);
 
@@ -87,6 +89,7 @@ export const useBudgets = () => {
         .from('budgets')
         .insert({
           user_id: user.id,
+          project_id: projectId,
           category,
           limit_amount: limitAmount,
         })
@@ -102,7 +105,7 @@ export const useBudgets = () => {
       setBudgets(prev => [...prev, newBudget]);
       return newBudget;
     }
-  }, [user, budgets]);
+  }, [user, projectId, budgets]);
 
   const deleteBudget = useCallback(async (category: ExpenseCategory) => {
     if (!user) return false;

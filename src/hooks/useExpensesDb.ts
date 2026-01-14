@@ -6,6 +6,7 @@ import { useAuth } from './useAuth';
 interface DbExpense {
   id: string;
   user_id: string;
+  project_id: string | null;
   date: string;
   category: string;
   amount: number;
@@ -22,14 +23,14 @@ const mapDbToExpense = (dbExpense: DbExpense): Expense => ({
   createdAt: dbExpense.created_at,
 });
 
-export const useExpensesDb = () => {
+export const useExpensesDb = (projectId: string | null) => {
   const { user } = useAuth();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Load expenses from database
   useEffect(() => {
-    if (!user) {
+    if (!user || !projectId) {
       setExpenses([]);
       setIsLoading(false);
       return;
@@ -41,6 +42,7 @@ export const useExpensesDb = () => {
         .from('expenses')
         .select('*')
         .eq('user_id', user.id)
+        .eq('project_id', projectId)
         .order('date', { ascending: false });
 
       if (error) {
@@ -52,15 +54,16 @@ export const useExpensesDb = () => {
     };
 
     loadExpenses();
-  }, [user]);
+  }, [user, projectId]);
 
   const addExpense = useCallback(async (expense: Omit<Expense, 'id' | 'createdAt'>) => {
-    if (!user) return null;
+    if (!user || !projectId) return null;
 
     const { data, error } = await supabase
       .from('expenses')
       .insert({
         user_id: user.id,
+        project_id: projectId,
         date: expense.date,
         category: expense.category,
         amount: expense.amount,
@@ -77,7 +80,7 @@ export const useExpensesDb = () => {
     const newExpense = mapDbToExpense(data);
     setExpenses(prev => [newExpense, ...prev]);
     return newExpense;
-  }, [user]);
+  }, [user, projectId]);
 
   const deleteExpense = useCallback(async (id: string) => {
     if (!user) return false;

@@ -16,10 +16,13 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { CurrencySelector } from '@/components/CurrencySelector';
 import { NotificationManager } from '@/components/NotificationManager';
 import { CurrencyConverter } from '@/components/CurrencyConverter';
+import { ProjectSelector } from '@/components/ProjectSelector';
+import { ProjectOnboarding } from '@/components/ProjectOnboarding';
 import { useAuth } from '@/hooks/useAuth';
 import { useExpensesDb } from '@/hooks/useExpensesDb';
 import { useBudgets } from '@/hooks/useBudgets';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
+import { useProjectContext } from '@/contexts/ProjectContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { toast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
@@ -27,6 +30,8 @@ import { format } from 'date-fns';
 const Index = () => {
   const [showAuth, setShowAuth] = useState(false);
   const { user, isLoading: authLoading, signOut, isAuthenticated } = useAuth();
+  const { selectedProject, selectedProjectId, projects, isLoading: projectsLoading } = useProjectContext();
+  
   const {
     expenses,
     isLoading: expensesLoading,
@@ -35,13 +40,13 @@ const Index = () => {
     updateExpense,
     getTotalExpenses,
     getExpensesByCategory,
-  } = useExpensesDb();
+  } = useExpensesDb(selectedProjectId);
 
   const {
     budgets,
     setBudget,
     deleteBudget,
-  } = useBudgets();
+  } = useBudgets(selectedProjectId);
 
   const { preferences, updatePreferences } = useUserPreferences();
   const { formatAmount } = useCurrency();
@@ -130,6 +135,20 @@ const Index = () => {
     return <LandingPage onGetStarted={() => setShowAuth(true)} />;
   }
 
+  // Show project loading state
+  if (projectsLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-pulse text-muted-foreground">Loading projects...</div>
+      </div>
+    );
+  }
+
+  // Show onboarding if no projects exist
+  if (projects.length === 0) {
+    return <ProjectOnboarding />;
+  }
+
   const isLoading = expensesLoading;
 
   if (isLoading) {
@@ -148,8 +167,9 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img src={logo} alt="ExpenseTrace" className="h-10 w-auto" />
-              <div>
-                <p className="text-sm text-muted-foreground">{user?.email}</p>
+              <div className="flex flex-col">
+                <ProjectSelector />
+                <p className="text-xs text-muted-foreground mt-1">{user?.email}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -172,6 +192,19 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container max-w-6xl mx-auto px-4 py-8 space-y-8">
+        {/* Project Header */}
+        {selectedProject && (
+          <div className="animate-fade-in">
+            <h1 className="text-2xl font-semibold flex items-center gap-2">
+              <span>{selectedProject.icon}</span>
+              {selectedProject.name}
+            </h1>
+            {selectedProject.description && (
+              <p className="text-muted-foreground mt-1">{selectedProject.description}</p>
+            )}
+          </div>
+        )}
+
         {/* Summary Section */}
         <section className="animate-fade-in">
           <ExpenseSummary
