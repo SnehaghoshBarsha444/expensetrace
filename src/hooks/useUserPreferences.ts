@@ -11,6 +11,8 @@ export interface UserPreferences {
   dailyReminderEnabled: boolean;
   dailyReminderTime: string;
   lastExpenseDate: string | null;
+  username: string | null;
+  monthlyBudget: number | null;
 }
 
 interface DbPreferences {
@@ -21,6 +23,8 @@ interface DbPreferences {
   daily_reminder_enabled: boolean;
   daily_reminder_time: string;
   last_expense_date: string | null;
+  username: string | null;
+  monthly_budget: number | null;
 }
 
 const mapDbToPreferences = (db: DbPreferences): UserPreferences => ({
@@ -31,6 +35,8 @@ const mapDbToPreferences = (db: DbPreferences): UserPreferences => ({
   dailyReminderEnabled: db.daily_reminder_enabled,
   dailyReminderTime: db.daily_reminder_time,
   lastExpenseDate: db.last_expense_date,
+  username: db.username,
+  monthlyBudget: db.monthly_budget,
 });
 
 export const useUserPreferences = () => {

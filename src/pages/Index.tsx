@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Receipt, LogOut } from 'lucide-react';
 import logo from '@/assets/logo.png';
+import { ProfileSettings } from '@/components/ProfileSettings';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -180,6 +181,7 @@ const Index = () => {
                 lastExpenseDate={preferences?.lastExpenseDate}
               />
               <ThemeToggle />
+              <ProfileSettings />
               <ExportButton expenses={expenses} />
               <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2">
                 <LogOut className="h-4 w-4" />
