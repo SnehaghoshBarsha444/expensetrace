@@ -130,10 +130,12 @@ export type Database = {
           daily_reminder_time: string | null
           id: string
           last_expense_date: string | null
+          monthly_budget: number | null
           preferred_currency: string
           theme: string
           updated_at: string
           user_id: string
+          username: string | null
         }
         Insert: {
           created_at?: string
@@ -141,10 +143,12 @@ export type Database = {
           daily_reminder_time?: string | null
           id?: string
           last_expense_date?: string | null
+          monthly_budget?: number | null
           preferred_currency?: string
           theme?: string
           updated_at?: string
           user_id: string
+          username?: string | null
         }
         Update: {
           created_at?: string
@@ -152,10 +156,12 @@ export type Database = {
           daily_reminder_time?: string | null
           id?: string
           last_expense_date?: string | null
+          monthly_budget?: number | null
           preferred_currency?: string
           theme?: string
           updated_at?: string
           user_id?: string
+          username?: string | null
         }
         Relationships: []
       }
