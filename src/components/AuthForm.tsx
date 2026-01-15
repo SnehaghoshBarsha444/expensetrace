@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { LogIn, UserPlus, Mail, Lock, Loader2 } from 'lucide-react';
+import logo from '@/assets/logo.png';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -84,10 +85,8 @@ export const AuthForm = () => {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md glass-card">
         <CardHeader className="text-center">
-          <div className="mx-auto p-3 rounded-xl bg-primary/10 w-fit mb-4">
-            <span className="text-4xl">💰</span>
-          </div>
-          <CardTitle className="text-2xl font-bold gradient-text">Expense Tracker</CardTitle>
+          <img src={logo} alt="ExpenseTrace" className="h-12 w-auto mx-auto mb-4" />
+          <CardTitle className="text-2xl font-bold gradient-text">ExpenseTrace</CardTitle>
           <CardDescription>Sign in to sync your expenses across devices</CardDescription>
         </CardHeader>
         <CardContent>
