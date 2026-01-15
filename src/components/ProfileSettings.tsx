@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, Mail, DollarSign, Wallet, Save, Loader2, Settings } from 'lucide-react';
-import { z } from 'zod';
+import { User, Mail, DollarSign, Wallet, Save, Loader2, Settings, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,18 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { CURRENCIES, Currency } from '@/types/currency';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-
-// Validation schema
-const profileSchema = z.object({
-  username: z.string().trim().max(50, 'Username must be less than 50 characters').optional(),
-  preferredCurrency: z.string(),
-  monthlyBudget: z.number().min(0, 'Budget must be positive').optional().nullable(),
-});
 
 export const ProfileSettings = () => {
   const { user } = useAuth();
@@ -38,22 +31,35 @@ export const ProfileSettings = () => {
   
   const [open, setOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [username, setUsername] = useState('');
   const [currency, setCurrency] = useState<Currency>('USD');
   const [monthlyBudget, setMonthlyBudget] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Password fields
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<Record<string, string>>({});
 
   // Load current preferences when dialog opens
   useEffect(() => {
     if (open && preferences) {
       loadCurrentValues();
     }
+    // Reset password fields when dialog closes
+    if (!open) {
+      resetPasswordFields();
+    }
   }, [open, preferences]);
 
   const loadCurrentValues = async () => {
     if (!user) return;
     
-    // Fetch the latest data including new fields
     const { data } = await supabase
       .from('user_preferences')
       .select('username, monthly_budget, preferred_currency')
@@ -65,6 +71,16 @@ export const ProfileSettings = () => {
       setCurrency((data.preferred_currency as Currency) || 'USD');
       setMonthlyBudget(data.monthly_budget ? String(data.monthly_budget) : '');
     }
+  };
+
+  const resetPasswordFields = () => {
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setPasswordErrors({});
+    setShowCurrentPassword(false);
+    setShowNewPassword(false);
+    setShowConfirmPassword(false);
   };
 
   const validateForm = () => {
@@ -82,12 +98,34 @@ export const ProfileSettings = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const validatePassword = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!currentPassword) {
+      newErrors.currentPassword = 'Current password is required';
+    }
+    
+    if (!newPassword) {
+      newErrors.newPassword = 'New password is required';
+    } else if (newPassword.length < 6) {
+      newErrors.newPassword = 'Password must be at least 6 characters';
+    }
+    
+    if (!confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your new password';
+    } else if (newPassword !== confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+    
+    setPasswordErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSave = async () => {
     if (!user || !validateForm()) return;
     
     setIsSaving(true);
     try {
-      // Update preferences in database
       const { error } = await supabase
         .from('user_preferences')
         .update({
@@ -99,7 +137,6 @@ export const ProfileSettings = () => {
 
       if (error) throw error;
 
-      // Also update the context
       await updatePreferences({ preferredCurrency: currency });
 
       toast({
@@ -120,6 +157,48 @@ export const ProfileSettings = () => {
     }
   };
 
+  const handleChangePassword = async () => {
+    if (!validatePassword()) return;
+    
+    setIsChangingPassword(true);
+    try {
+      // First verify current password by trying to sign in
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user?.email || '',
+        password: currentPassword,
+      });
+
+      if (signInError) {
+        setPasswordErrors({ currentPassword: 'Current password is incorrect' });
+        setIsChangingPassword(false);
+        return;
+      }
+
+      // Update password
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: 'Password changed',
+        description: 'Your password has been updated successfully.',
+      });
+      
+      resetPasswordFields();
+    } catch (error: any) {
+      console.error('Error changing password:', error);
+      toast({
+        title: 'Error changing password',
+        description: error.message || 'Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -128,7 +207,7 @@ export const ProfileSettings = () => {
           <span className="sr-only">Profile Settings</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="h-5 w-5 text-primary" />
@@ -227,7 +306,7 @@ export const ProfileSettings = () => {
               </p>
             </div>
 
-            {/* Save Button */}
+            {/* Save Profile Button */}
             <Button 
               onClick={handleSave} 
               disabled={isSaving}
@@ -245,6 +324,129 @@ export const ProfileSettings = () => {
                 </>
               )}
             </Button>
+
+            <Separator className="my-6" />
+
+            {/* Password Change Section */}
+            <div className="space-y-4">
+              <h3 className="font-medium flex items-center gap-2">
+                <Lock className="h-4 w-4 text-primary" />
+                Change Password
+              </h3>
+
+              {/* Current Password */}
+              <div className="space-y-2">
+                <Label htmlFor="currentPassword">Current Password</Label>
+                <div className="relative">
+                  <Input
+                    id="currentPassword"
+                    type={showCurrentPassword ? 'text' : 'password'}
+                    placeholder="Enter current password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  >
+                    {showCurrentPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
+                {passwordErrors.currentPassword && (
+                  <p className="text-sm text-destructive">{passwordErrors.currentPassword}</p>
+                )}
+              </div>
+
+              {/* New Password */}
+              <div className="space-y-2">
+                <Label htmlFor="newPassword">New Password</Label>
+                <div className="relative">
+                  <Input
+                    id="newPassword"
+                    type={showNewPassword ? 'text' : 'password'}
+                    placeholder="Enter new password (min 6 characters)"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                  >
+                    {showNewPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
+                {passwordErrors.newPassword && (
+                  <p className="text-sm text-destructive">{passwordErrors.newPassword}</p>
+                )}
+              </div>
+
+              {/* Confirm Password */}
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder="Confirm new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
+                {passwordErrors.confirmPassword && (
+                  <p className="text-sm text-destructive">{passwordErrors.confirmPassword}</p>
+                )}
+              </div>
+
+              {/* Change Password Button */}
+              <Button 
+                onClick={handleChangePassword} 
+                disabled={isChangingPassword || !currentPassword || !newPassword || !confirmPassword}
+                variant="outline"
+                className="w-full"
+              >
+                {isChangingPassword ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Changing Password...
+                  </>
+                ) : (
+                  <>
+                    <Lock className="mr-2 h-4 w-4" />
+                    Change Password
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         )}
       </DialogContent>
