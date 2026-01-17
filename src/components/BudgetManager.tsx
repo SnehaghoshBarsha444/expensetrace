@@ -104,42 +104,44 @@ export const BudgetManager = ({
   };
 
   return (
-    <Card className="glass-card">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Target className="h-5 w-5 text-primary" />
+    <Card className="glass-card-elevated">
+      <CardHeader className="pb-3 sm:pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <CardTitle className="section-header">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Target className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            </div>
             Budget Limits
           </CardTitle>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button variant="outline" size="sm" className="gap-2 w-full sm:w-auto h-9 sm:h-10">
                 <Settings2 className="h-4 w-4" />
                 Set Budget
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-[90vw] sm:max-w-md">
               <DialogHeader>
                 <DialogTitle>Set Category Budget</DialogTitle>
-                <DialogDescription>
+                <DialogDescription className="text-sm">
                   Set a monthly spending limit for a category. You'll be alerted when approaching the limit.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label>Category</Label>
+                  <Label className="text-sm">Category</Label>
                   <Select 
                     value={selectedCategory} 
                     onValueChange={(v) => setSelectedCategory(v as ExpenseCategory)}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-10 sm:h-11">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {EXPENSE_CATEGORIES.map((cat) => (
                         <SelectItem key={cat.value} value={cat.value}>
                           <span className="flex items-center gap-2">
-                            <span>{cat.emoji}</span>
+                            <span className="text-base">{cat.emoji}</span>
                             <span>{cat.label}</span>
                           </span>
                         </SelectItem>
@@ -148,7 +150,7 @@ export const BudgetManager = ({
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Monthly Limit ({currency})</Label>
+                  <Label className="text-sm">Monthly Limit ({currency})</Label>
                   <Input
                     type="number"
                     min="0"
@@ -156,14 +158,15 @@ export const BudgetManager = ({
                     placeholder="500.00"
                     value={budgetAmount}
                     onChange={(e) => setBudgetAmount(e.target.value)}
+                    className="h-10 sm:h-11 text-base"
                   />
                 </div>
               </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              <DialogFooter className="flex-col sm:flex-row gap-2">
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="w-full sm:w-auto">
                   Cancel
                 </Button>
-                <Button onClick={handleSaveBudget} disabled={isLoading}>
+                <Button onClick={handleSaveBudget} disabled={isLoading} className="w-full sm:w-auto">
                   Save Budget
                 </Button>
               </DialogFooter>
@@ -171,17 +174,19 @@ export const BudgetManager = ({
           </Dialog>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-0">
         {budgets.length === 0 ? (
-          <div className="text-center py-8">
-            <Target className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <p className="text-muted-foreground mb-4">No budgets set yet</p>
-            <p className="text-sm text-muted-foreground">
+          <div className="text-center py-10 sm:py-12">
+            <div className="p-4 rounded-full bg-muted inline-flex mb-4">
+              <Target className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground" />
+            </div>
+            <p className="text-sm sm:text-base text-muted-foreground mb-2">No budgets set yet</p>
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-xs mx-auto">
               Set spending limits for your categories to track your budget
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-4 sm:space-y-5">
             {budgets.map((budget) => {
               const categoryInfo = getCategoryInfo(budget.category);
               const spent = expensesByCategory[budget.category] || 0;
@@ -189,46 +194,46 @@ export const BudgetManager = ({
               const remaining = budget.limitAmount - spent;
 
               return (
-                <div key={budget.id} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">{categoryInfo.emoji}</span>
-                      <span className="font-medium text-foreground">{categoryInfo.label}</span>
+                <div key={budget.id} className="space-y-2 p-3 sm:p-4 rounded-xl bg-muted/30 border border-border/30">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                      <span className="text-lg sm:text-xl">{categoryInfo.emoji}</span>
+                      <span className="font-medium text-sm sm:text-base text-foreground truncate">{categoryInfo.label}</span>
                       {getStatusIcon(spent, budget.limitAmount)}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                      <span className="text-xs sm:text-sm text-muted-foreground tabular-nums">
                         {formatAmount(spent)} / {formatAmount(budget.limitAmount)}
                       </span>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-destructive"
                         onClick={() => handleDeleteBudget(budget.category)}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       </Button>
                     </div>
                   </div>
                   <div className="relative">
                     <Progress 
                       value={percentage} 
-                      className="h-2"
+                      className="h-2 sm:h-2.5"
                     />
                     <div 
-                      className={`absolute top-0 left-0 h-full rounded-full transition-all ${getProgressColor(spent, budget.limitAmount)}`}
+                      className={`absolute top-0 left-0 h-full rounded-full transition-all duration-500 ${getProgressColor(spent, budget.limitAmount)}`}
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
                   {remaining < 0 && (
-                    <p className="text-sm text-destructive flex items-center gap-1">
-                      <AlertTriangle className="h-3 w-3" />
+                    <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 font-medium">
+                      <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       Over budget by {formatAmount(Math.abs(remaining))}
                     </p>
                   )}
                   {remaining > 0 && remaining < budget.limitAmount * 0.2 && (
-                    <p className="text-sm text-orange-500 flex items-center gap-1">
-                      <AlertTriangle className="h-3 w-3" />
+                    <p className="text-xs sm:text-sm text-orange-500 flex items-center gap-1.5 font-medium">
+                      <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       Only {formatAmount(remaining)} remaining
                     </p>
                   )}

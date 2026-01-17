@@ -161,54 +161,82 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container max-w-6xl mx-auto px-4 py-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img src={logo} alt="ExpenseTrace" className="h-10 w-auto" />
-              <div className="flex flex-col">
+      <header className="border-b border-border/40 bg-card/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <div className="page-container py-3 sm:py-4">
+          <div className="flex items-center justify-between gap-4">
+            {/* Left: Logo & Project */}
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+              <img src={logo} alt="ExpenseTrace" className="h-8 sm:h-10 w-auto flex-shrink-0" />
+              <div className="flex flex-col min-w-0">
                 <ProjectSelector />
-                <p className="text-xs text-muted-foreground mt-1">{user?.email}</p>
+                <p className="text-xs text-muted-foreground mt-0.5 truncate hidden sm:block">{user?.email}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <CurrencySelector />
-              <NotificationManager 
-                budgets={budgets}
-                expensesByCategory={getExpensesByCategory()}
-                lastExpenseDate={preferences?.lastExpenseDate}
-              />
+            
+            {/* Right: Actions */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <div className="hidden md:flex items-center gap-1.5">
+                <CurrencySelector />
+                <NotificationManager 
+                  budgets={budgets}
+                  expensesByCategory={getExpensesByCategory()}
+                  lastExpenseDate={preferences?.lastExpenseDate}
+                />
+              </div>
               <ThemeToggle />
               <ProfileSettings />
               <ExportButton expenses={expenses} />
-              <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleSignOut} 
+                className="gap-2 text-muted-foreground hover:text-foreground hidden sm:flex"
+              >
                 <LogOut className="h-4 w-4" />
-                Sign Out
+                <span className="hidden lg:inline">Sign Out</span>
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handleSignOut} 
+                className="sm:hidden text-muted-foreground hover:text-foreground"
+              >
+                <LogOut className="h-4 w-4" />
               </Button>
             </div>
+          </div>
+          
+          {/* Mobile currency & notifications */}
+          <div className="flex items-center gap-2 mt-3 md:hidden">
+            <CurrencySelector />
+            <NotificationManager 
+              budgets={budgets}
+              expensesByCategory={getExpensesByCategory()}
+              lastExpenseDate={preferences?.lastExpenseDate}
+            />
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container max-w-6xl mx-auto px-4 py-8 space-y-8">
+      <main className="flex-1 page-container py-6 sm:py-8 lg:py-10 space-y-6 sm:space-y-8 lg:space-y-10">
         {/* Project Header */}
         {selectedProject && (
-          <div className="animate-fade-in">
-            <h1 className="text-2xl font-semibold flex items-center gap-2">
-              <span>{selectedProject.icon}</span>
+          <div className="animate-fade-in-up">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold flex items-center gap-2.5 text-foreground">
+              <span className="text-2xl sm:text-3xl">{selectedProject.icon}</span>
               {selectedProject.name}
             </h1>
             {selectedProject.description && (
-              <p className="text-muted-foreground mt-1">{selectedProject.description}</p>
+              <p className="text-muted-foreground mt-1.5 text-sm sm:text-base max-w-2xl">{selectedProject.description}</p>
             )}
           </div>
         )}
 
         {/* Summary Section */}
-        <section className="animate-fade-in">
+        <section className="animate-fade-in-up" style={{ animationDelay: '50ms' }}>
           <ExpenseSummary
             totalExpenses={getTotalExpenses()}
             expensesByCategory={getExpensesByCategory()}
@@ -217,42 +245,46 @@ const Index = () => {
         </section>
 
         {/* Tabs for different views */}
-        <Tabs defaultValue="expenses" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 max-w-lg">
-            <TabsTrigger value="expenses">Expenses</TabsTrigger>
-            <TabsTrigger value="charts">Analytics</TabsTrigger>
-            <TabsTrigger value="budgets">Budgets</TabsTrigger>
-            <TabsTrigger value="converter">Converter</TabsTrigger>
+        <Tabs defaultValue="expenses" className="space-y-5 sm:space-y-6 lg:space-y-8">
+          <TabsList className="grid w-full grid-cols-4 max-w-lg h-11 sm:h-12 p-1 bg-muted/50">
+            <TabsTrigger value="expenses" className="text-xs sm:text-sm font-medium">Expenses</TabsTrigger>
+            <TabsTrigger value="charts" className="text-xs sm:text-sm font-medium">Analytics</TabsTrigger>
+            <TabsTrigger value="budgets" className="text-xs sm:text-sm font-medium">Budgets</TabsTrigger>
+            <TabsTrigger value="converter" className="text-xs sm:text-sm font-medium">Converter</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="expenses" className="space-y-6">
+          <TabsContent value="expenses" className="space-y-5 sm:space-y-6 lg:space-y-8 mt-0">
             {/* Two Column Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 sm:gap-6 lg:gap-8">
               {/* Add Expense Form */}
-              <section className="lg:col-span-2 animate-slide-up">
-                <Card className="glass-card sticky top-24">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <Receipt className="h-5 w-5 text-primary" />
+              <section className="lg:col-span-2 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+                <Card className="glass-card-elevated lg:sticky lg:top-24">
+                  <CardHeader className="pb-3 sm:pb-4">
+                    <CardTitle className="section-header">
+                      <div className="p-2 rounded-lg bg-primary/10">
+                        <Receipt className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                      </div>
                       Add Expense
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="pt-0">
                     <ExpenseForm onSubmit={handleAddExpense} />
                   </CardContent>
                 </Card>
               </section>
 
               {/* Expense List */}
-              <section className="lg:col-span-3 animate-slide-up" style={{ animationDelay: '100ms' }}>
-                <Card className="glass-card">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <Receipt className="h-5 w-5 text-primary" />
+              <section className="lg:col-span-3 animate-fade-in-up" style={{ animationDelay: '150ms' }}>
+                <Card className="glass-card-elevated">
+                  <CardHeader className="pb-3 sm:pb-4">
+                    <CardTitle className="section-header">
+                      <div className="p-2 rounded-lg bg-primary/10">
+                        <Receipt className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                      </div>
                       Recent Expenses
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="pt-0">
                     <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} onEdit={handleEditExpense} />
                   </CardContent>
                 </Card>
@@ -260,11 +292,11 @@ const Index = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="charts" className="animate-fade-in">
+          <TabsContent value="charts" className="animate-fade-in mt-0">
             <ExpenseCharts expenses={expenses} />
           </TabsContent>
 
-          <TabsContent value="budgets" className="animate-fade-in">
+          <TabsContent value="budgets" className="animate-fade-in mt-0">
             <BudgetManager
               budgets={budgets}
               expensesByCategory={getExpensesByCategory()}
@@ -273,7 +305,7 @@ const Index = () => {
             />
           </TabsContent>
 
-          <TabsContent value="converter" className="animate-fade-in">
+          <TabsContent value="converter" className="animate-fade-in mt-0">
             <div className="max-w-md mx-auto">
               <CurrencyConverter />
             </div>
@@ -282,11 +314,11 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 mt-auto">
-        <div className="container max-w-6xl mx-auto px-4 py-6">
-          <p className="text-center text-sm text-muted-foreground">
+      <footer className="border-t border-border/40 mt-auto bg-card/50">
+        <div className="page-container py-5 sm:py-6">
+          <p className="text-center text-xs sm:text-sm text-muted-foreground">
             Your expenses are synced across all your devices.
-            <span className="ml-1 text-primary">Secure and private.</span>
+            <span className="ml-1 text-primary font-medium">Secure and private.</span>
           </p>
         </div>
       </footer>

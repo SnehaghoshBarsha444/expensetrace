@@ -61,11 +61,11 @@ export const ExpenseForm = ({ onSubmit }: ExpenseFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         {/* Date Picker */}
-        <div className="space-y-2">
-          <Label htmlFor="date" className="text-sm font-medium text-foreground">
+        <div className="space-y-1.5 sm:space-y-2">
+          <Label htmlFor="date" className="text-xs sm:text-sm font-medium text-foreground">
             Date
           </Label>
           <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
@@ -73,11 +73,11 @@ export const ExpenseForm = ({ onSubmit }: ExpenseFormProps) => {
               <Button
                 variant="outline"
                 className={cn(
-                  'w-full justify-start text-left font-normal',
+                  'w-full justify-start text-left font-normal h-10 sm:h-11 text-sm',
                   !date && 'text-muted-foreground'
                 )}
               >
-                <CalendarIcon className="mr-2 h-4 w-4" />
+                <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                 {date ? format(date, 'PPP') : <span>Pick a date</span>}
               </Button>
             </PopoverTrigger>
@@ -98,19 +98,19 @@ export const ExpenseForm = ({ onSubmit }: ExpenseFormProps) => {
         </div>
 
         {/* Category Select */}
-        <div className="space-y-2">
-          <Label htmlFor="category" className="text-sm font-medium text-foreground">
+        <div className="space-y-1.5 sm:space-y-2">
+          <Label htmlFor="category" className="text-xs sm:text-sm font-medium text-foreground">
             Category
           </Label>
           <Select value={category} onValueChange={(v) => setCategory(v as ExpenseCategory)}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full h-10 sm:h-11 text-sm">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
               {EXPENSE_CATEGORIES.map((cat) => (
                 <SelectItem key={cat.value} value={cat.value}>
                   <span className="flex items-center gap-2">
-                    <span>{cat.emoji}</span>
+                    <span className="text-base">{cat.emoji}</span>
                     <span>{cat.label}</span>
                   </span>
                 </SelectItem>
@@ -121,8 +121,8 @@ export const ExpenseForm = ({ onSubmit }: ExpenseFormProps) => {
       </div>
 
       {/* Amount Input */}
-      <div className="space-y-2">
-        <Label htmlFor="amount" className="text-sm font-medium text-foreground">
+      <div className="space-y-1.5 sm:space-y-2">
+        <Label htmlFor="amount" className="text-xs sm:text-sm font-medium text-foreground">
           Amount ({currencyInfo.symbol})
         </Label>
         <Input
@@ -133,15 +133,15 @@ export const ExpenseForm = ({ onSubmit }: ExpenseFormProps) => {
           placeholder="0.00"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="text-lg font-semibold"
+          className="text-base sm:text-lg font-semibold h-11 sm:h-12"
           required
         />
       </div>
 
       {/* Description */}
-      <div className="space-y-2">
-        <Label htmlFor="description" className="text-sm font-medium text-foreground">
-          Description (optional)
+      <div className="space-y-1.5 sm:space-y-2">
+        <Label htmlFor="description" className="text-xs sm:text-sm font-medium text-foreground">
+          Description <span className="text-muted-foreground font-normal">(optional)</span>
         </Label>
         <Textarea
           id="description"
@@ -149,13 +149,13 @@ export const ExpenseForm = ({ onSubmit }: ExpenseFormProps) => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={2}
-          className="resize-none"
+          className="resize-none text-sm"
         />
       </div>
 
       {/* Submit Button */}
-      <Button type="submit" className="w-full gap-2" size="lg">
-        <Plus className="h-5 w-5" />
+      <Button type="submit" className="w-full gap-2 h-11 sm:h-12 text-sm sm:text-base font-semibold hover-lift" size="lg">
+        <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
         Add Expense
       </Button>
     </form>
