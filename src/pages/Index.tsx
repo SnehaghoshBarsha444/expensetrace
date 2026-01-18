@@ -175,8 +175,8 @@ const Index = () => {
               </div>
             </div>
             
-            {/* Right: Actions - Icon only on mobile */}
-            <div className="flex items-center gap-0.5 sm:gap-1 md:gap-1.5 flex-shrink-0">
+            {/* Right: Actions - Responsive layout */}
+            <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 flex-shrink-0">
               {/* Desktop only: Currency & Notifications */}
               <div className="hidden lg:flex items-center gap-1.5">
                 <CurrencySelector />
@@ -186,17 +186,23 @@ const Index = () => {
                   lastExpenseDate={preferences?.lastExpenseDate}
                 />
               </div>
-              <ThemeToggle />
-              <ProfileSettings />
-              <ExportButton expenses={expenses} />
+              {/* Theme & Profile - always visible but compact on mobile */}
+              <div className="flex items-center gap-0.5 sm:gap-1">
+                <ThemeToggle />
+                <ProfileSettings />
+              </div>
+              {/* Export & Sign out - hidden on smallest screens */}
+              <div className="hidden xs:flex items-center gap-0.5 sm:gap-1">
+                <ExportButton expenses={expenses} />
+              </div>
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={handleSignOut} 
-                className="h-8 w-8 sm:h-9 sm:w-9 text-muted-foreground hover:text-foreground"
+                className="h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 text-muted-foreground hover:text-foreground"
                 title="Sign Out"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </Button>
             </div>
           </div>
