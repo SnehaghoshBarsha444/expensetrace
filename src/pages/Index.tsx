@@ -164,20 +164,21 @@ const Index = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="border-b border-border/40 bg-card/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
-        <div className="page-container py-3 sm:py-4">
-          <div className="flex items-center justify-between gap-4">
+        <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3 md:py-4">
+          <div className="flex items-center justify-between gap-2 sm:gap-4">
             {/* Left: Logo & Project */}
-            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-              <img src={logo} alt="ExpenseTrace" className="h-8 sm:h-10 w-auto flex-shrink-0" />
-              <div className="flex flex-col min-w-0">
+            <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-1">
+              <img src={logo} alt="ExpenseTrace" className="h-7 sm:h-8 md:h-10 w-auto flex-shrink-0" />
+              <div className="flex flex-col min-w-0 flex-1">
                 <ProjectSelector />
-                <p className="text-xs text-muted-foreground mt-0.5 truncate hidden sm:block">{user?.email}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 truncate hidden md:block">{user?.email}</p>
               </div>
             </div>
             
-            {/* Right: Actions */}
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <div className="hidden md:flex items-center gap-1.5">
+            {/* Right: Actions - Icon only on mobile */}
+            <div className="flex items-center gap-0.5 sm:gap-1 md:gap-1.5 flex-shrink-0">
+              {/* Desktop only: Currency & Notifications */}
+              <div className="hidden lg:flex items-center gap-1.5">
                 <CurrencySelector />
                 <NotificationManager 
                   budgets={budgets}
@@ -190,26 +191,18 @@ const Index = () => {
               <ExportButton expenses={expenses} />
               <Button 
                 variant="ghost" 
-                size="sm" 
-                onClick={handleSignOut} 
-                className="gap-2 text-muted-foreground hover:text-foreground hidden sm:flex"
-              >
-                <LogOut className="h-4 w-4" />
-                <span className="hidden lg:inline">Sign Out</span>
-              </Button>
-              <Button 
-                variant="ghost" 
                 size="icon" 
                 onClick={handleSignOut} 
-                className="sm:hidden text-muted-foreground hover:text-foreground"
+                className="h-8 w-8 sm:h-9 sm:w-9 text-muted-foreground hover:text-foreground"
+                title="Sign Out"
               >
                 <LogOut className="h-4 w-4" />
               </Button>
             </div>
           </div>
           
-          {/* Mobile currency & notifications */}
-          <div className="flex items-center gap-2 mt-3 md:hidden">
+          {/* Mobile/Tablet: Currency & Notifications row */}
+          <div className="flex items-center gap-1.5 sm:gap-2 mt-2 pt-2 border-t border-border/30 lg:hidden">
             <CurrencySelector />
             <NotificationManager 
               budgets={budgets}
