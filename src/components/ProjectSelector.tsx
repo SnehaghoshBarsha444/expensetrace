@@ -137,20 +137,24 @@ export const ProjectSelector = () => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-2 min-w-[140px] justify-between">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-1 sm:gap-2 min-w-0 sm:min-w-[120px] md:min-w-[140px] max-w-[100px] sm:max-w-[140px] md:max-w-[180px] justify-between h-7 sm:h-8 md:h-9 px-2 sm:px-3"
+          >
             {selectedProject ? (
               <>
-                <span className="flex items-center gap-2">
-                  <span>{selectedProject.icon}</span>
-                  <span className="truncate max-w-[100px]">{selectedProject.name}</span>
+                <span className="flex items-center gap-1 sm:gap-2 min-w-0">
+                  <span className="flex-shrink-0 text-sm sm:text-base">{selectedProject.icon}</span>
+                  <span className="truncate text-xs sm:text-sm">{selectedProject.name}</span>
                 </span>
-                <ChevronDown className="h-4 w-4 opacity-50" />
+                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 opacity-50 flex-shrink-0 ml-0.5" />
               </>
             ) : (
               <>
-                <FolderOpen className="h-4 w-4" />
-                <span>No Project</span>
-                <ChevronDown className="h-4 w-4 opacity-50" />
+                <FolderOpen className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                <span className="truncate text-xs sm:text-sm">No Project</span>
+                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 opacity-50 flex-shrink-0 ml-0.5" />
               </>
             )}
           </Button>
