@@ -167,16 +167,16 @@ const Index = () => {
         <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3 md:py-4">
           <div className="flex items-center justify-between gap-2 sm:gap-4">
             {/* Left: Logo & Project */}
-            <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-1">
-              <img src={logo} alt="ExpenseTrace" className="h-7 sm:h-8 md:h-10 w-auto flex-shrink-0" />
-              <div className="flex flex-col min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 sm:gap-3 md:gap-4 min-w-0 flex-shrink">
+              <img src={logo} alt="ExpenseTrace" className="h-6 sm:h-8 md:h-10 w-auto flex-shrink-0" />
+              <div className="flex flex-col min-w-0">
                 <ProjectSelector />
                 <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 truncate hidden md:block">{user?.email}</p>
               </div>
             </div>
             
             {/* Right: Actions - Responsive layout */}
-            <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 flex-shrink-0">
+            <div className="flex items-center gap-0.5 sm:gap-1.5 md:gap-2 flex-shrink-0">
               {/* Desktop only: Currency & Notifications */}
               <div className="hidden lg:flex items-center gap-1.5">
                 <CurrencySelector />
